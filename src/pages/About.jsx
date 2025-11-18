@@ -1,12 +1,11 @@
-
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAboutContent } from "../features/user/actions/aboutThunks";
-import Loader from "../components/common/items/Loader";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Loader from '../components/common/items/Loader';
+import { fetchAboutContent } from '../features/user/actions/aboutThunks';
 
 const About = () => {
   const dispatch = useDispatch();
-  const { about, loading, error } = useSelector((state) => state.about);
+  const { about, loading, error } = useSelector(state => state.about);
 
   useEffect(() => {
     dispatch(fetchAboutContent());
@@ -34,13 +33,22 @@ const About = () => {
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Owner Info */}
         <div className="lg:w-1/3 text-center lg:text-left">
-          <img src={ownerInfo.image} alt={ownerInfo.name} className="rounded shadow-md mb-6 mx-auto" />
+          <img
+            src={ownerInfo.image}
+            alt={ownerInfo.name}
+            className="rounded shadow-md mb-6 mx-auto"
+          />
           <h3 className="text-xl font-semibold mb-2">{ownerInfo.name}</h3>
           <p>Dirt Dogs Excavating</p>
           <p>{ownerInfo.address}</p>
           <div className="mt-4 space-y-1 text-sm text-gray-700">
             <p>📞 {ownerInfo.phone}</p>
-            <p>📧 <a href={`mailto:${ownerInfo.email}`} className="text-red-700 hover:underline">{ownerInfo.email}</a></p>
+            <p>
+              📧{' '}
+              <a href={`mailto:${ownerInfo.email}`} className="text-red-700 hover:underline">
+                {ownerInfo.email}
+              </a>
+            </p>
           </div>
         </div>
 
@@ -53,8 +61,10 @@ const About = () => {
 
           <section>
             <h2 className="text-xl font-semibold mb-2">Customer Testimonials</h2>
-            {customerTestimonials.map((t) => (
-              <blockquote key={t._id} className="italic mb-2 text-sm">"{t.message}" – {t.name}</blockquote>
+            {customerTestimonials.map(t => (
+              <blockquote key={t._id} className="italic mb-2 text-sm">
+                "{t.message}" – {t.name}
+              </blockquote>
             ))}
           </section>
 
