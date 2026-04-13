@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../../components/common/items/Button";
 import {
@@ -80,7 +81,7 @@ const AdminDashboard = () => {
       email: user?.email || "",
       password: ""
     });
-  }, [user]);
+  }, [user, reset]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
