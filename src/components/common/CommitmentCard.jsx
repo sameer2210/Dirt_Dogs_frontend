@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Button from "../common/items/Button";
 import Loader from "../common/items/Loader";
 import { mockServicesData } from '../../data/servicesData';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 
 const CommitmentCard = () => {
@@ -104,7 +105,7 @@ const CommitmentCard = () => {
               {/* Image Container */}
               <div className="relative overflow-hidden h-48 sm:h-56 lg:h-64">
                 <img
-                  src={project.image}
+                  src={project.image ? getImageUrl(project.image) : "https://via.placeholder.com/600x400"}
                   alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   onError={(e) => {

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { updateUser, logoutUser } from "../../features/user/actions/userThunks";
 import { NavLink } from "react-router-dom";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const AdminDashboard = () => {
   const [showUpdateConfirm, setShowUpdateConfirm] = useState(false);
 
   const profileImage =
-    user?.profileImage ||
+    (user?.profileImage ? getImageUrl(user.profileImage) : null) ||
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
 
   const {

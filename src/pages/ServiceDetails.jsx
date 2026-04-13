@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { Image, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { getImageUrl } from "../utils/getImageUrl";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/common/items/Button";
@@ -129,7 +130,7 @@ const ServiceDetails = () => {
               <div>
                 <div className="bg-gray-100 rounded-lg p-4">
                   <img
-                    src={selectedService.banners?.[selectedImage] || "/placeholder.jpg"}
+                    src={selectedService.banners?.[selectedImage] ? getImageUrl(selectedService.banners[selectedImage]) : "/placeholder.jpg"}
                     alt={selectedService.title}
                     className="w-full h-80 object-contain rounded"
                     onError={(e) => (e.target.src = "/placeholder.jpg")}
@@ -144,7 +145,7 @@ const ServiceDetails = () => {
                         className={`w-12 h-12 rounded border-2 ${selectedImage === index ? "border-blue-500" : "border-gray-200"}`}
                         disabled={loading}
                       >
-                        <img src={image || "/placeholder.jpg"} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                        <img src={image ? getImageUrl(image) : "/placeholder.jpg"} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>

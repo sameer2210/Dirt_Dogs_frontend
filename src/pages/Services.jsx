@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { getImageUrl } from "../utils/getImageUrl";
 import { Link } from "react-router-dom";
 import { fetchServices } from "../features/servicesProvide";
 import Loader from "../components/common/items/Loader";
@@ -15,7 +16,7 @@ const ServiceCard = ({ title, image, id }) => (
       className="block bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
     >
       <img
-        src={image || "/placeholder.jpg"} // Use local fallback image
+        src={image ? getImageUrl(image) : "/placeholder.jpg"} // Use local fallback image
         alt={title}
         className="w-full h-48 object-cover rounded-t"
       // onError={(e) => (e.target.src = "/placeholder.jpg")} // Optional: Keep for additional safety

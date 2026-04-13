@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../components/common/items/Loader';
 import { fetchAboutContent } from '../features/user/actions/aboutThunks';
+import { getImageUrl } from '../utils/getImageUrl';
 
 const About = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ const About = () => {
         {/* Owner Info */}
         <div className="lg:w-1/3 text-center lg:text-left">
           <img
-            src={ownerInfo.image}
+            src={getImageUrl(ownerInfo.image)}
             alt={ownerInfo.name}
             className="rounded shadow-md mb-6 mx-auto"
           />
@@ -77,7 +78,7 @@ const About = () => {
             <h2 className="text-xl font-semibold mb-2">Loyal Dirt Dogs!</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {loyaldogsImage.map((url, index) => (
-                <img key={index} src={url} alt={`dog-${index + 1}`} className="rounded shadow-sm" />
+                <img key={index} src={getImageUrl(url)} alt={`dog-${index + 1}`} className="rounded shadow-sm" />
               ))}
             </div>
           </section>
