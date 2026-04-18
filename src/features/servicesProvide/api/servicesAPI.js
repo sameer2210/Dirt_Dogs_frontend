@@ -38,6 +38,32 @@
 
 import axiosInstance from "../../../services/axiosInstance";
 
+const MEDIA_FIELDS = new Set(["banners", "image", "video"]);
+
+const appendPayloadToFormData = (formData, payload) => {
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") {
+      return;
+    }
+
+    if (MEDIA_FIELDS.has(key)) {
+      if (Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file) {
+            formData.append(key, file);
+          }
+        });
+        return;
+      }
+
+      formData.append(key, value);
+      return;
+    }
+
+    formData.append(key, value);
+  });
+};
+
 // GET all services by filter
 export const getServicesByFilterAPI = async (filterData = {}) => {
   const res = await axiosInstance.get("/admin/getServiceDetailByFilter", {
@@ -58,19 +84,9 @@ export const getServiceByIdAPI = async (serviceDetailId) => {
 // CREATE a new service (handle form-data)
 export const createServiceAPI = async (serviceData) => {
   const formData = new FormData();
-  Object.keys(serviceData).forEach((key) => {
-    if (key === "banners" || key === "image" || key === "video") {
-      if (Array.isArray(serviceData[key])) {
-        serviceData[key].forEach((file, index) => {
-          formData.append(`${key}[${index}]`, file);
-        });
-      } else if (serviceData[key]) {
-        formData.append(key, serviceData[key]);
-      }
-    } else {
-      formData.append(key, serviceData[key]);
-    }
-  });
+
+  appendPayloadToFormData(formData, serviceData);
+
   const res = await axiosInstance.post("/admin/createServiceDetail", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
@@ -81,29 +97,19 @@ export const createServiceAPI = async (serviceData) => {
 export const updateServiceAPI = async ({ serviceDetailId, updateData }) => {
   const formData = new FormData();
   formData.append("serviceDetailId", serviceDetailId);
-  if (updateData.bannerIndexes)
+  if (updateData.bannerIndexes) {
     formData.append("bannerIndexes", JSON.stringify(updateData.bannerIndexes));
-  if (updateData.imageIndexes)
+  }
+  if (updateData.imageIndexes) {
     formData.append("imageIndexes", JSON.stringify(updateData.imageIndexes));
-  Object.keys(updateData).forEach((key) => {
-    if (
-      key !== "bannerIndexes" &&
-      key !== "imageIndexes" &&
-      key !== "serviceDetailId"
-    ) {
-      if (key === "banners" || key === "image" || key === "video") {
-        if (Array.isArray(updateData[key])) {
-          updateData[key].forEach((file, index) => {
-            formData.append(`${key}[${index}]`, file);
-          });
-        } else if (updateData[key]) {
-          formData.append(key, updateData[key]);
-        }
-      } else {
-        formData.append(key, updateData[key]);
-      }
-    }
-  });
+  }
+
+  const payload = { ...updateData };
+  delete payload.bannerIndexes;
+  delete payload.imageIndexes;
+  delete payload.serviceDetailId;
+  appendPayloadToFormData(formData, payload);
+
   const res = await axiosInstance.put("/admin/updateServiceDetail", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });

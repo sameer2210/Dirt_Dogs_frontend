@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { Image, FileText } from "lucide-react";
+import { Image, FileText, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getImageUrl } from "../utils/getImageUrl";
@@ -30,7 +30,7 @@ const InputField = ({ label, icon: Icon, error, children, required }) => (
 const ServiceDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const { id } = useParams();
-  const { user } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
   const { selectedService, loading } = useSelector((state) => state.service);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -40,6 +40,7 @@ const ServiceDetails = () => {
       description: selectedService.description,
       serviceName: selectedService.serviceName,
       footerContent: selectedService.footerContent,
+      websiteUrl: selectedService.websiteUrl,
       banner: selectedService.banners?.[0] || "",
     } : {},
   });
@@ -60,6 +61,7 @@ const ServiceDetails = () => {
         description: selectedService.description,
         serviceName: selectedService.serviceName,
         footerContent: selectedService.footerContent,
+        websiteUrl: selectedService.websiteUrl,
         banner: selectedService.banners?.[0] || "",
       });
     }
@@ -75,6 +77,7 @@ const ServiceDetails = () => {
           description: data.description,
           serviceName: data.serviceName,
           footerContent: data.footerContent,
+          websiteUrl: data.websiteUrl,
           banners: data.banner ? [data.banner] : selectedService.banners,
         },
       })).unwrap();
@@ -161,6 +164,19 @@ const ServiceDetails = () => {
                     <p className="text-gray-700 whitespace-pre-line">{selectedService.footerContent}</p>
                   </div>
                 )}
+                {selectedService.websiteUrl && (
+                  <div>
+                    <p className="text-sm text-gray-600">Website</p>
+                    <a
+                      href={selectedService.websiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-600 hover:underline break-all"
+                    >
+                      {selectedService.websiteUrl}
+                    </a>
+                  </div>
+                )}
                 {selectedService.video && (
                   <div>
                     <p className="text-sm text-gray-600">Video</p>
@@ -174,7 +190,7 @@ const ServiceDetails = () => {
             </div>
 
             {/* Admin Edit Section */}
-            {user?.isAdmin && (
+            {currentUser?.userType === "Admin" && (
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <h2 className="text-lg font-bold text-gray-800 mb-4">Edit Service</h2>
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100">
@@ -238,6 +254,27 @@ const ServiceDetails = () => {
                             placeholder="Enter footer content..."
                             rows={4}
                             className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                          />
+                        </InputField>
+
+                        <InputField label="Website URL" icon={Link2} error={errors.websiteUrl}>
+                          <input
+                            {...register("websiteUrl", {
+                              validate: (value) => {
+                                if (!value) {
+                                  return true;
+                                }
+                                try {
+                                  new URL(value);
+                                  return true;
+                                } catch {
+                                  return "Please enter a valid URL";
+                                }
+                              },
+                            })}
+                            type="url"
+                            placeholder="https://example.com"
+                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </InputField>
                       </div>
