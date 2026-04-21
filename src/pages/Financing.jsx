@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Shield, Clock, DollarSign, CheckCircle, Phone, Mail, MapPin } from 'lucide-react';
+import { ChevronRight, Shield, Clock, DollarSign, CheckCircle, Phone, Mail } from 'lucide-react';
+import Loader from '../components/common/items/Loader';
 
 const Financing = () => {
   const [financingOptions, setFinancingOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Simulated API call - replace with your actual API endpoint
+  // Simulated API call
   useEffect(() => {
     const fetchFinancingData = async () => {
       try {
-        // Replace this URL with your actual API endpoint
-        // const response = await fetch('/admin/createFinancing');
-        // const data = await response.json();
-
-        // Mock data for demonstration - replace with actual API call
         const mockData = [
           {
             id: 1,
@@ -38,15 +34,14 @@ const Financing = () => {
             id: 4,
             title: "Project-Based Financing",
             description: "Tailored financing solutions for large-scale excavation projects. Competitive rates and flexible payment schedules.",
-            icon: "icon"
+            icon: "🏗️"
           }
         ];
 
         setTimeout(() => {
           setFinancingOptions(mockData);
           setLoading(false);
-        }, 1000);
-
+        }, 800);
       } catch (err) {
         setError('Failed to load financing options', err);
         setLoading(false);
@@ -61,28 +56,21 @@ const Financing = () => {
     "Competitive interest rates",
     "Quick approval process",
     "No hidden fees",
-    "Professional support"
+    "Professional support",
+    "Tailored for your project"
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading financing options...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <Loader />;
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <p className="text-xl mb-4">⚠️ {error}</p>
+      <div className="flex min-h-[50vh] items-center justify-center bg-[#f3f5f8]">
+        <div className="text-center text-[var(--dd-copy)]">
+          <DollarSign className="mx-auto mb-4 h-12 w-12 text-red-400" />
+          <p className="mb-4 text-xl">⚠️ {error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg transition-colors"
+            className="rounded-lg bg-[var(--dd-accent)] px-6 py-3 text-white transition-colors hover:bg-[var(--dd-accent-deep)]"
           >
             Try Again
           </button>
@@ -92,179 +80,108 @@ const Financing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 animate-pulse"></div>
-        <div className="relative container mx-auto px-6 py-20">
-          <div className="text-center mb-16 animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text hover:text-transparent animate-slide-up">
-              Financing Solutions
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed animate-slide-up animation-delay-200">
-              Power your excavation projects with flexible financing options designed for contractors and businesses
-            </p>
-          </div>
+    <div className="dirt-home -mx-5 bg-[#f3f5f8] px-5 py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl space-y-16">
+        
+        {/* Header Section */}
+        <section className="text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--dd-muted)]">
+            Flexible Options
+          </p>
+          <h1 className="mt-2 text-4xl text-[var(--dd-accent-deep)] sm:text-5xl">Financing Solutions</h1>
+          <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-[var(--dd-copy)]">
+            Power your excavation projects with flexible financing options designed for contractors, businesses, and homeowners alike.
+          </p>
+        </section>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {[
-              { icon: DollarSign, value: "$2M+", label: "Financed Projects" },
-              { icon: Clock, value: "24hr", label: "Quick Approval" },
-              { icon: Shield, value: "100%", label: "Secure Process" }
-            ].map((stat, index) => (
-              <div key={index} className="text-center animate-scale-in" style={{ animationDelay: `${index * 200}ms` }}>
-                <div className="bg-gradient-to-br from-slate-800 to-slate-700 p-8 rounded-2xl border border-slate-600 hover:border-orange-500/50 transition-all duration-300 hover:transform hover:scale-105">
-                  <stat.icon className="w-12 h-12 text-orange-400 mx-auto mb-4" />
-                  <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-                  <div className="text-slate-400">{stat.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Financing Options Grid */}
-      <div className="container mx-auto px-6 py-16">
-        <h2 className="text-4xl font-bold text-white text-center mb-12 animate-slide-up">
-          Choose Your <span className="text-orange-400">Financing Plan</span>
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
-          {financingOptions.map((option, index) => (
-            <div
-              key={option.id}
-              className="group bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl p-8 border border-slate-600 hover:border-orange-500/50 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 animate-slide-up"
-              style={{ animationDelay: `${index * 150}ms` }}
-            >
-              <div className="flex items-start space-x-4 mb-6">
-                <div className="text-4xl bg-gradient-to-br from-orange-400 to-yellow-400 p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  {option.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
-                    {option.title}
-                  </h3>
-                  <p className="text-slate-300 leading-relaxed mb-6">
-                    {option.description}
-                  </p>
-                </div>
-              </div>
-
-              <button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 flex items-center justify-center space-x-2 group-hover:shadow-lg">
-                <span>Learn More</span>
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
+        {/* Stats Grid */}
+        <section className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          {[
+            { icon: DollarSign, value: "$2M+", label: "Financed Projects" },
+            { icon: Clock, value: "24hr", label: "Quick Approval" },
+            { icon: Shield, value: "100%", label: "Secure Process" }
+          ].map((stat, index) => (
+            <div key={index} className="rounded-2xl border border-black/8 bg-white p-8 text-center shadow-[0_24px_45px_-36px_rgba(10,14,25,0.45)]">
+              <stat.icon className="mx-auto mb-4 h-10 w-10 text-[var(--dd-accent)]" />
+              <div className="mb-2 text-3xl font-bold text-[var(--dd-accent-deep)]">{stat.value}</div>
+              <div className="text-sm font-medium uppercase tracking-[0.1em] text-[var(--dd-muted)]">{stat.label}</div>
             </div>
           ))}
-        </div>
+        </section>
 
-        {/* Benefits Section */}
-        <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-3xl p-12 border border-slate-600 mb-16 animate-fade-in">
-          <h3 className="text-3xl font-bold text-white text-center mb-12">
-            Why Choose Our <span className="text-orange-400">Financing?</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, index) => (
+        {/* Financing Options */}
+        <section>
+          <div className="mb-10 text-center">
+             <h2 className="text-3xl text-[var(--dd-accent-deep)]">Choose Your Financing Plan</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            {financingOptions.map((option) => (
               <div
-                key={index}
-                className="flex items-center space-x-3 animate-slide-in"
-                style={{ animationDelay: `${index * 100}ms` }}
+                key={option.id}
+                className="group flex flex-col rounded-2xl border border-black/8 bg-white p-8 shadow-[0_24px_45px_-36px_rgba(10,14,25,0.45)] transition-shadow hover:shadow-[0_24px_45px_-24px_rgba(10,14,25,0.6)]"
               >
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                <span className="text-slate-300 text-lg">{benefit}</span>
+                <div className="mb-6 flex items-start gap-4">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[#f3f5f8] text-3xl transition-transform group-hover:scale-110">
+                    {option.icon}
+                  </div>
+                  <div>
+                    <h3 className="mb-3 text-2xl font-bold text-[var(--dd-accent-deep)]">
+                      {option.title}
+                    </h3>
+                    <p className="text-base leading-relaxed text-[var(--dd-copy)]">
+                      {option.description}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-auto pt-4">
+                  <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--dd-accent)] bg-white px-6 py-3 font-semibold text-[var(--dd-accent)] transition hover:bg-[var(--dd-accent)] hover:text-white">
+                    <span>Learn More</span>
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="rounded-2xl border border-black/8 bg-white p-10 shadow-[0_24px_45px_-36px_rgba(10,14,25,0.45)] sm:p-14">
+          <h3 className="mb-10 text-center text-3xl text-[var(--dd-accent-deep)]">
+            Why Choose Our Financing?
+          </h3>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="flex items-center gap-3">
+                <CheckCircle className="h-6 w-6 shrink-0 text-[var(--dd-accent)]" />
+                <span className="text-lg font-medium text-[var(--dd-copy)]">{benefit}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-orange-500 to-yellow-500 rounded-3xl p-12 animate-pulse-slow">
-          <h3 className="text-3xl font-bold text-white mb-6">
+        <section className="rounded-2xl border border-black/8 bg-[var(--dd-soft)] p-10 text-center shadow-[0_24px_45px_-36px_rgba(10,14,25,0.45)] sm:p-16">
+          <h3 className="mb-4 text-3xl font-bold text-[var(--dd-accent-deep)]">
             Ready to Get Started?
           </h3>
-          <p className="text-white/90 text-xl mb-8 max-w-2xl mx-auto">
-            Contact our financing specialists today for a personalized quote and quick approval
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-[var(--dd-copy)]">
+            Contact our financing specialists today for a personalized quote and quick approval.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="bg-white text-orange-600 font-bold py-4 px-8 rounded-xl hover:bg-slate-100 transition-all duration-300 flex items-center space-x-2 hover:transform hover:scale-105">
-              <Phone className="w-5 h-5" />
-              <span>Call Now: (555) 123-4567</span>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--dd-accent)] px-8 py-4 font-semibold text-white transition hover:bg-[var(--dd-accent-deep)] sm:w-auto">
+              <Phone className="h-5 w-5" />
+              <span>Call Now</span>
             </button>
-            <button className="bg-slate-800 text-white font-bold py-4 px-8 rounded-xl hover:bg-slate-700 transition-all duration-300 flex items-center space-x-2 hover:transform hover:scale-105">
-              <Mail className="w-5 h-5" />
+            <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-8 py-4 font-semibold text-[var(--dd-accent-deep)] transition hover:bg-gray-50 sm:w-auto">
+              <Mail className="h-5 w-5" />
               <span>Get Quote Online</span>
             </button>
           </div>
-        </div>
+        </section>
+        
       </div>
-
-      {/* Footer Contact */}
-      <footer className="bg-slate-900 border-t border-slate-700 py-12">
-        <div className="container mx-auto px-6 text-center">
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 text-slate-400">
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-5 h-5 text-orange-400" />
-              <span>123 Construction Ave, Builder City, BC 12345</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Phone className="w-5 h-5 text-orange-400" />
-              <span>(555) 123-4567</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="w-5 h-5 text-orange-400" />
-              <span>financing@excavatingpro.com</span>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes slide-in {
-          from { opacity: 0; transform: translateX(-20px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes scale-in {
-          from { opacity: 0; transform: scale(0.8); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out;
-        }
-        
-        .animate-slide-in {
-          animation: slide-in 0.6s ease-out;
-        }
-        
-        .animate-scale-in {
-          animation: scale-in 0.6s ease-out;
-        }
-        
-        .animate-pulse-slow {
-          animation: pulse 3s ease-in-out infinite;
-        }
-        
-        .animation-delay-200 {
-          animation-delay: 200ms;
-        }
-      `}</style>
     </div>
   );
 };

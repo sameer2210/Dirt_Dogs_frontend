@@ -1,8 +1,32 @@
 import React from "react";
-// import mastercard from "/assets/payment/mastercard.png";
-// import visa from "/assets/payment/visa.png";
-// import amex from "/assets/payment/amex.png";
-// import discover from "/assets/payment/discover.png";
+import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa } from "react-icons/fa";
+
+const paymentCards = [
+  {
+    name: "MasterCard",
+    icon: FaCcMastercard,
+    cardClass: "from-sky-300 to-sky-500",
+    iconClass: "text-[#ff9f1a]",
+  },
+  {
+    name: "Visa",
+    icon: FaCcVisa,
+    cardClass: "from-gray-100 to-gray-300",
+    iconClass: "text-[#1a3fb0]",
+  },
+  {
+    name: "American Express",
+    icon: FaCcAmex,
+    cardClass: "from-sky-300 to-sky-500",
+    iconClass: "text-[#0a66c2]",
+  },
+  {
+    name: "Discover",
+    icon: FaCcDiscover,
+    cardClass: "from-gray-100 to-gray-300",
+    iconClass: "text-[#f36b1c]",
+  },
+];
 
 const Footer = () => {
   return (
@@ -67,27 +91,27 @@ const Footer = () => {
           </div>
 
           {/* Right: Payment & Copyright */}
-          <div className="text-center md:text-right">
-            <h4 className="text-gray-400 mb-4">We accept Credit Cards</h4>
-            <div className="flex justify-center md:justify-end gap-4 mb-6">
-              <img
-                // src={mastercard}
-                alt="MasterCard" className="h-12" />
-              <img
-                // src={visa}
-                alt="Visa" className="h-12" />
-              <img
-                // src={amex}
-                alt="American Express" className="h-12" />
-              <img
-                // src={discover}
-                alt="Discover" className="h-12" />
+          <div className="text-center">
+            <h4 className="text-gray-400 mb-6 text-xl">We accept Credit Cards</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+              {paymentCards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <div
+                    key={card.name}
+                    className={`h-24 rounded-xl border border-white/15 bg-gradient-to-b ${card.cardClass} shadow-[0_10px_30px_-18px_rgba(255,255,255,0.45)] flex items-center justify-center`}
+                    aria-label={card.name}
+                  >
+                    <Icon className={`text-5xl ${card.iconClass}`} />
+                  </div>
+                );
+              })}
             </div>
-            <hr className="border-gray-700 mb-4" />
-            <p className="text-gray-400 text-sm">
+            <hr className="border-gray-700 mb-6" />
+            <p className="text-gray-400 text-sm sm:text-base">
               Copyright 2024 Dirt Dogs Excavating Grading & Land LLC
             </p>
-            <p className="text-red-600 text-xs">
+            <p className="text-red-600 text-sm mt-3">
               Powered by{" "}
               <a href="#" className="text-white hover:underline">
                 Cymax Media

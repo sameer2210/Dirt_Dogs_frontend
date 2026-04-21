@@ -1,105 +1,90 @@
-/* eslint-disable no-unused-vars */
-import { motion } from "framer-motion";
-import {
-    Globe2,
-    Image,
-    Handshake,
-    DollarSign,
-} from "lucide-react";
-
-const cards = [
-    {
-        title: "SERVICES",
-        icon: <Globe2 size={48} />,
-        color: "bg-red-900",
-        btn: "Learn More",
-    },
-    {
-        title: "GALLERY",
-        icon: <Image size={48} />,
-        color: "bg-red-700",
-        btn: "View Now",
-    },
-    {
-        title: "GIVING BACK",
-        icon: <Handshake size={48} />,
-        color: "bg-red-600",
-        btn: "Learn More",
-    },
-    {
-        title: "QUOTES",
-        icon: <DollarSign size={48} />,
-        color: "bg-red-500",
-        btn: "Request Now!",
-    },
-];
+import { NavLink } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import QuickBooksLogo from "../../assets/QuickBooksLogo.png";
 
 const testimonials = [
-    {
-        name: "John Doe",
-        quote: "I wanted to take this opportunity to thank you for the magnificent job you did on our driveway...we couldn’t believe our eyes!",
-        role: "Homeowner",
-        color: "bg-stone-950",
-    },
-    {
-        name: "Jane Smith",
-        quote: "You took an absolute 'eye sore' of a driveway and turned it into something beautiful. Thank you for your honesty, good will and the outstanding job you did for us!",
-        role: "Property Manager",
-        color: "bg-stone-900",
-    },
-    {
-        name: "Mike Johnson",
-        quote: "I was amazed with what you did. We are really happy with it. It looks great! Thanks!",
-        role: "Contractor",
-        color: "bg-stone-950",
-    },
+  {
+    quote:
+      "You took an absolute eye sore of a driveway and turned it into something beautiful. Thank you for your honesty and hard work.",
+    name: "Residential Client",
+  },
+  {
+    quote:
+      "We were amazed with what you did. The entire project came out better than expected and the process was smooth.",
+    name: "Property Owner",
+  },
+  {
+    quote:
+      "Thanks for the magnificent job on our driveway. We could not believe the transformation.",
+    name: "Homeowner",
+  },
 ];
 
-export default function ServicesTestimonials() {
-    return (
-        <section className="w-full">
-            <div className="grid md:grid-cols-4 grid-cols-2 w-full">
-                {cards.map((card, idx) => (
-                    <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.2 }}
-                        className={`text-white py-26 px-4 flex flex-col items-center text-center ${card.color}`}
-                    >
-                        {card.icon}
-                        <h3 className="text-lg font-bold mt-10">{card.title}</h3>
-                        <hr className="w-8 border-white mt-2 mb-6" />
-                        <button className="bg-gray-900 text-white px-4 py-2 rounded">
-                            {card.btn}
-                        </button>
-                    </motion.div>
-                ))}
-            </div>
+const ServicesTestimonials = () => {
+  return (
+    <>
+      <section className="-mx-5 bg-[#0a0b0d] py-16 text-white sm:py-20">
+        <div className="mx-auto max-w-7xl px-5">
+          <h2 className="text-center text-3xl sm:text-4xl">Testimonials</h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <article key={testimonial.quote} className="rounded-xl border border-white/10 bg-white/5 p-6">
+                <p className="text-sm leading-7 text-white/80">&ldquo;{testimonial.quote}&rdquo;</p>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--dd-signal)]">
+                  {testimonial.name}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Testimonials */}
-            <div className="text-center py-16 px-4 ">
-                <h2 className="text-4xl font-semibold mb-10">Testimonials</h2>
-                <div className="grid md:grid-cols-3 gap-8">
-                    {testimonials.map((testimonial, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 50 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.3 }}
-                            className={`p-8 rounded shadow-md ${testimonial.color} text-gray-50`}
-                        >
-                            <blockquote className="text-m italic mb-4">
-                                “{testimonial.quote}”
-                            </blockquote>
-                            <p className="font-semibold text-xl">{testimonial.name}</p>
-                            {testimonial.role && (
-                                <p className="text text-gray-50">{testimonial.role}</p>
-                            )}
-                        </motion.div>
-                    ))}
-                </div>
+      <section className="-mx-5 bg-[var(--dd-accent)] py-14 text-white">
+        <div className="mx-auto max-w-4xl px-5 text-center">
+          <h2 className="text-3xl sm:text-4xl">Commitment to Quality</h2>
+          <p className="mt-4 text-base leading-8 text-white/90 sm:text-lg">
+            At Dirt Dogs Excavating our goal is to satisfy customers the first time by delivering
+            professional excavation and earth moving services at a fair price.
+          </p>
+        </div>
+      </section>
+
+      <section className="-mx-5 bg-white py-14 sm:py-20">
+        <div className="mx-auto max-w-5xl px-5">
+          <div className="rounded-xl border border-black/8 bg-[var(--dd-soft)] p-8 sm:p-10">
+            <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--dd-muted)]">
+                  Financing Partner
+                </p>
+                <h3 className="mt-2 text-3xl">Flexible Payment Options</h3>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--dd-copy)] sm:text-base">
+                  We partner with QuickBooks financing options to help clients move projects
+                  forward confidently and on schedule.
+                </p>
+              </div>
+              <img src={QuickBooksLogo} alt="QuickBooks logo" className="h-14 w-auto sm:h-16" />
             </div>
-        </section>
-    );
-}
+            <div className="mt-8 flex flex-wrap gap-3">
+              <NavLink
+                to="/financing"
+                className="inline-flex items-center gap-2 rounded-md bg-[var(--dd-ink)] px-5 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-black"
+              >
+                View Financing
+                <ArrowRight size={16} />
+              </NavLink>
+              <NavLink
+                to="/quotes"
+                className="inline-flex items-center gap-2 rounded-md border border-[var(--dd-ink)] px-5 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--dd-ink)] transition hover:bg-[var(--dd-ink)] hover:text-white"
+              >
+                Start A Quote
+              </NavLink>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default ServicesTestimonials;

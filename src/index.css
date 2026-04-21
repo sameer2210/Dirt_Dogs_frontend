@@ -1,1 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap");
 @import "tailwindcss";
+
+:root {
+  --dd-ink: #0f1218;
+  --dd-accent: #db1a1e;
+  --dd-accent-deep: #b3080b;
+  --dd-signal: #ff6b6d;
+  --dd-soft: #f6f7f9;
+  --dd-muted: #6d7380;
+  --dd-copy: #2a2f3b;
+}
+
+.dirt-home {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(229, 56, 59, 0.07), transparent 38%),
+    radial-gradient(circle at 92% 42%, rgba(17, 24, 39, 0.08), transparent 46%),
+    #f4f5f7;
+  color: var(--dd-ink);
+}
+
+.dirt-home h1,
+.dirt-home h2,
+.dirt-home h3 {
+  font-family: "Syne", "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+@keyframes ddFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.dirt-home .dd-float {
+  animation: ddFloat 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dirt-home .dd-float {
+    animation: none;
+  }
+}
