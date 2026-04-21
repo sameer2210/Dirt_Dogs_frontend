@@ -1,407 +1,245 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-// eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import Button from "../../components/common/items/Button";
-import {
-  User,
-  Mail,
-  Lock,
-  Upload,
-  Save,
-  LogOut,
-  Trash2
-} from "lucide-react";
+import { Camera, Lock, LogOut, Mail, Save, User } from "lucide-react";
+import AdminShell from "../../components/admin/AdminShell";
 import { updateUser, logoutUser } from "../../features/user/actions/userThunks";
-import { NavLink } from "react-router-dom";
 import { getImageUrl } from "../../utils/getImageUrl";
+
+const fieldClass =
+  "w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.userReducer);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showUpdateConfirm, setShowUpdateConfirm] = useState(false);
-
-  const profileImage =
-    (user?.profileImage ? getImageUrl(user.profileImage) : null) ||
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  const navigate = useNavigate();
+  const { currentUser, loading } = useSelector((state) => state.user);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isDirty },
-    reset
   } = useForm({
     defaultValues: {
-      username: user?.username || "",
-      email: user?.email || "",
-      password: ""
-    }
+      name: "",
+      email: "",
+      password: "",
+    },
   });
-
-
-  const handleUpdateUser = async (data) => {
-    setIsLoading(true);
-    try {
-      const updatedUser = { ...user, ...data };
-      await new Promise((r) => setTimeout(r, 2000));
-      await dispatch(updateUser(user.id, updatedUser));
-      toast.success("Profile updated successfully!");
-    } catch (error) {
-      console.error("Update failed:", error);
-      toast.error("Failed to update profile.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    setIsLoading(true);
-    try {
-      await dispatch(logoutUser(user.id));
-      await new Promise((res) => setTimeout(res, 2000)); // simulate API call
-      toast.success("Logged out successfully!");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast.error("Failed to logout!");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const resetForm = () => {
-    reset();
-    toast.info("Changes discarded successfully!");
-  };
 
   useEffect(() => {
     reset({
-      username: user?.username || "",
-      email: user?.email || "",
-      password: ""
+      name: currentUser?.name || "",
+      email: currentUser?.email || "",
+      password: "",
     });
-  }, [user, reset]);
+    setImagePreview(currentUser?.image ? getImageUrl(currentUser.image) : "");
+    setImageFile(null);
+  }, [currentUser, reset]);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      console.log("File selected:", file.name);
-      toast.success("Profile picture uploaded!");
+  const fallbackProfileImage =
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&w=256&h=256&q=80";
+  const profileImage = imagePreview || fallbackProfileImage;
+
+  const hasChanges = isDirty || Boolean(imageFile);
+
+  const joinedDate = useMemo(() => {
+    if (!currentUser?.createdAt) {
+      return "N/A";
+    }
+
+    return new Date(currentUser.createdAt).toLocaleDateString();
+  }, [currentUser]);
+
+  const onSubmit = async (formValues) => {
+    if (!currentUser?._id) {
+      toast.error("Admin session not found. Please login again.");
+      navigate("/login");
+      return;
+    }
+
+    const payload = {
+      adminId: currentUser._id,
+      name: formValues.name?.trim(),
+    };
+
+    if (formValues.password?.trim()) {
+      payload.password = formValues.password.trim();
+    }
+
+    if (imageFile) {
+      payload.image = imageFile;
+    }
+
+    try {
+      await dispatch(updateUser(payload)).unwrap();
+      toast.success("Admin profile updated successfully");
+      reset({
+        name: payload.name || currentUser?.name || "",
+        email: currentUser?.email || "",
+        password: "",
+      });
+      setImageFile(null);
+    } catch (error) {
+      toast.error(error || "Failed to update admin profile");
     }
   };
 
+  const onLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error(error || "Failed to logout");
+    }
+  };
+
+  const onReset = () => {
+    reset({
+      name: currentUser?.name || "",
+      email: currentUser?.email || "",
+      password: "",
+    });
+    setImageFile(null);
+    setImagePreview(currentUser?.image ? getImageUrl(currentUser.image) : "");
+  };
+
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
-      >
-        <div className="max-w-5xl mx-auto space-y-6">
-          {/* Header Section */}
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="bg-gradient-to-r from-gray-600 to-teal-500 rounded-2xl p-8 text-center shadow-xl"
-          >
-            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-              Account Settings
-            </h1>
-            <p className="text-indigo-100 mt-2 text-base sm:text-lg">
-              Manage your profile and preferences
-            </p>
-          </motion.div>
-
-          <div className="flex justify-between ">
-            {/* Sidebar */}
-            <div>
-              <aside className="w-56 h-screen bg-stone-950 text-white p-4">
-                <h2 className="text-xl font-bold mb-4">Admin Panel</h2>
-                <nav className="flex flex-col gap-2">
-                  <NavLink to="/adminDashboard" className="hover:underline">Dashboard</NavLink>
-                  <NavLink to="/serviceCreate" className="hover:underline">Create Service</NavLink>
-                  {/* Add more links here */}
-                </nav>
-              </aside>
-            </div>
-
-            {/* Main Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Account Information Card */}
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 sm:p-8"
-              >
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <User className="w-6 h-6 text-indigo-600" />
-                  Account Information
-                </h2>
-                <div className="space-y-4">
-
-                  {/* Profile Picture */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.9, duration: 0.3 }}
-                  >
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Profile Picture
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <img
-                          src={profileImage}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 space-y-2  mt-2">
-                        <label className="group relative flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded border-2 border-teal-600 hover:border-teal-700 transition-all duration-300 text-base tracking-wide uppercase overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed">
-                          Upload New Picture
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                          />
-                          <span className="absolute inset-0 bg-white text-black  transform translate-x-full group-hover:translate-x-0 transition-transform duration-600 ease-out"></span>
-                          <span className="relative z-10 group-hover:text-teal-800 transition-colors duration-400"></span>
-                        </label>
-
-
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* name */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.3 }}
-                  >
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      name
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        {...register("name", {
-                          required: "name is required",
-                          minLength: {
-                            value: 3,
-                            message: "name must be at least 3 characters"
-                          }
-                        })}
-                        className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${errors.username
-                          ? "border-red-300 bg-red-50"
-                          : "border-gray-200 hover:border-indigo-300"
-                          }`}
-                        type="text"
-                        placeholder="Enter name"
-                      />
-                    </div>
-                    {errors.username && (
-                      <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                        <span className="w-4 h-4">⚠</span>
-                        {errors.username.message}
-                      </p>
-                    )}
-                  </motion.div>
-
-                  {/* Email */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.3 }}
-                  >
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        {...register("email", {
-                          required: "Email is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Invalid email address"
-                          }
-                        })}
-                        className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${errors.email
-                          ? "border-red-300 bg-red-50"
-                          : "border-gray-200 hover:border-indigo-300"
-                          }`}
-                        type="email"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                    {errors.email && (
-                      <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                        <span className="w-4 h-4">⚠</span>
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </motion.div>
-
-
-
-                  {/* Password */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7, duration: 0.3 }}
-                  >
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        {...register("password", {
-                          minLength: {
-                            value: 6,
-                            message: "Password must be at least 6 characters"
-                          }
-                        })}
-                        className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${errors.password
-                          ? "border-red-300 bg-red-50"
-                          : "border-gray-200 hover:border-indigo-300"
-                          }`}
-                        type="password"
-                        placeholder="Enter new password"
-                      />
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                        <span className="w-4 h-4">⚠</span>
-                        {errors.password.message}
-                      </p>
-                    )}
-                  </motion.div>
-
-
-
-
-
-                  {/* Action Buttons */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.0, duration: 0.3 }}
-                    className="flex  pt-3"
-                  >
-                    <button
-                      onClick={handleSubmit(handleUpdateUser)}
-                      disabled={isLoading || !isDirty}
-                      className="group relative flex items-center gap-2 rounded-tl-xl bg-gray-50  font-medium py-3 px-6 border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-800 text-base tracking-wide uppercase overflow-hidden disabled:opacity-90 disabled:cursor-not-allowed"
-                    >
-                      <Save className="w-5 text-teal-700 h-5 group-hover:scale-110 transition-transform duration-300" />
-                      {isLoading ? "Saving..." : "Save Changes"}
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gray-900 group-hover:w-full transition-all duration-700"></span>
-                      <span className="relative z-10 transform group-hover:-translate-y-0.5 transition-transform duration-600"></span>
-                    </button>
-
-                    <Button
-                      onClick={() => resetForm(true)}
-                      disabled={isLoading}
-                      icon={Save}
-                      iconColor="text-yellow-400"
-                    > Discard Changes
-                    </Button>
-
-                  </motion.div>
-                </div>
-
-                {/* Danger Zone */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.1, duration: 0.3 }}
-                  className="border-t border-gray-200 pt-6 mt-8"
-                >
-                  <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <span className="text-red-500">⚠</span>
-                    Danger Zone
-                  </h3>
-                  <div className="flex justify-evenly">
-
-                    <Button
-                      onClick={() => handleLogout(true)}
-                      disabled={isLoading}
-                      loadingText="Logging out..."
-                      icon={LogOut}
-                      iconColor="text-red-500"
-                    >Logout
-                    </Button>
-
-                    <Button
-                      onClick={() => setShowUpdateConfirm(true)}
-                      disabled={isLoading}
-                      icon={Trash2}
-                      iconColor="text-red-600"
-                    >Update Account
-                    </Button>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-            </div>
+    <AdminShell
+      title="Admin Dashboard"
+      subtitle="Manage account settings and keep your admin profile up to date."
+      actions={
+        <button
+          type="button"
+          onClick={onLogout}
+          className="inline-flex items-center gap-2 rounded-xl border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+        >
+          <LogOut size={16} />
+          Logout
+        </button>
+      }
+    >
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-black text-gray-900">Account Summary</h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl bg-gray-50 p-4">
+            <p className="text-xs uppercase tracking-[0.15em] text-gray-500">Role</p>
+            <p className="mt-1 text-sm font-semibold text-gray-900">{currentUser?.userType || "Admin"}</p>
+          </div>
+          <div className="rounded-xl bg-gray-50 p-4">
+            <p className="text-xs uppercase tracking-[0.15em] text-gray-500">Email</p>
+            <p className="mt-1 truncate text-sm font-semibold text-gray-900">{currentUser?.email || "N/A"}</p>
+          </div>
+          <div className="rounded-xl bg-gray-50 p-4">
+            <p className="text-xs uppercase tracking-[0.15em] text-gray-500">Joined</p>
+            <p className="mt-1 text-sm font-semibold text-gray-900">{joinedDate}</p>
           </div>
         </div>
+      </div>
 
-        {/* Update Confirmation Modal */}
-        <AnimatePresence>
-          {showUpdateConfirm && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-red-500 bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-black text-gray-900">Profile Settings</h2>
+        <p className="mt-1 text-sm text-gray-600">Change your name, password, and profile image.</p>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
+          <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center">
+            <img
+              src={profileImage}
+              alt="Admin profile"
+              className="h-16 w-16 rounded-full border border-gray-200 object-cover"
+            />
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 transition hover:border-gray-400">
+              <Camera size={16} />
+              Upload Picture
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) {
+                    return;
+                  }
+                  setImageFile(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }}
+              />
+            </label>
+          </div>
+
+          <div>
+            <label className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <User size={16} className="text-gray-500" />
+              Name
+            </label>
+            <input
+              {...register("name", {
+                required: "Name is required",
+                minLength: { value: 3, message: "Name must be at least 3 characters" },
+              })}
+              type="text"
+              placeholder="Enter admin name"
+              className={fieldClass}
+            />
+            {errors.name ? <p className="mt-1 text-sm text-red-600">{errors.name.message}</p> : null}
+          </div>
+
+          <div>
+            <label className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Mail size={16} className="text-gray-500" />
+              Email
+            </label>
+            <input
+              {...register("email")}
+              type="email"
+              disabled
+              className={`${fieldClass} cursor-not-allowed bg-gray-100 text-gray-500`}
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Lock size={16} className="text-gray-500" />
+              New Password
+            </label>
+            <input
+              {...register("password", {
+                minLength: { value: 6, message: "Password must be at least 6 characters" },
+              })}
+              type="password"
+              placeholder="Leave empty to keep current password"
+              className={fieldClass}
+            />
+            {errors.password ? (
+              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            ) : null}
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <button
+              type="submit"
+              disabled={loading || !hasChanges}
+              className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl"
-              >
-                <div className="text-center mb-6">
-                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Save className="w-6 h-6 text-red-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Confirm Account Update
-                  </h3>
-                </div>
-                <p className="text-gray-600 mb-6 text-center text-sm">
-                  Are you sure you want to update your account? This action cannot be undone.
-                </p>
-                <div className="flex gap-3">
-                  <Button
-                    onClick={handleUpdateUser}
-                    disabled={isLoading}
-                    loadingText="Updateing..."
-                  >Update Account
-                  </Button>
-
-                  <Button
-                    onClick={() => setShowUpdateConfirm(false)}
-                    disabled={isLoading}
-                  >Cancel
-                  </Button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </>
+              <Save size={16} />
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
+            <button
+              type="button"
+              onClick={onReset}
+              disabled={loading}
+              className="rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+    </AdminShell>
   );
 };
 

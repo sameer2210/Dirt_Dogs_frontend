@@ -1,4 +1,4 @@
-// Utility function to get the absolute image URL from the backend
+// Utility function to get the absolute image URL from the backend or S3
 const IMAGE_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export const getImageUrl = path => {
@@ -6,7 +6,7 @@ export const getImageUrl = path => {
 
   const normalizedPath = path.toString().trim().replace(/\\/g, '/');
 
-  // If the path already has a protocol (http/https), return it as is
+  // If the path already has a protocol (http/https), it's an absolute URL (S3 or external)
   if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) {
     return normalizedPath;
   }
@@ -16,7 +16,7 @@ export const getImageUrl = path => {
     return normalizedPath;
   }
 
-  // Backend static files are served from /uploads on the API host
+  // Backend static files are served from /uploads on the API host (deprecated - using S3 now)
   if (normalizedPath.startsWith('/uploads/')) {
     return `${IMAGE_BASE_URL}${normalizedPath}`;
   }
