@@ -1,5 +1,5 @@
 // Utility function to get the absolute image URL from the backend or S3
-const IMAGE_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const IMAGE_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export const getImageUrl = path => {
   if (!path) return '/placeholder.jpg'; // Fallback for null paths
