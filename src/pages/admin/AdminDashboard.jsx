@@ -151,11 +151,23 @@ const AdminDashboard = () => {
               src={profileImage}
               alt="Admin profile"
               className="h-16 w-16 rounded-full border border-gray-200 object-cover"
+              onError={(event) => {
+                if (event.currentTarget.dataset.fallbackApplied === "true") {
+                  event.currentTarget.onerror = null;
+                  return;
+                }
+                event.currentTarget.dataset.fallbackApplied = "true";
+                event.currentTarget.src = "/placeholder.jpg";
+              }}
             />
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 transition hover:border-gray-400">
+            <label
+              htmlFor="admin-profile-image"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 transition hover:border-gray-400"
+            >
               <Camera size={16} />
               Upload Picture
               <input
+                id="admin-profile-image"
                 type="file"
                 accept="image/*"
                 className="hidden"
@@ -172,46 +184,55 @@ const AdminDashboard = () => {
           </div>
 
           <div>
-            <label className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
+            <label htmlFor="admin-name" className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
               <User size={16} className="text-gray-500" />
               Name
             </label>
             <input
+              id="admin-name"
               {...register("name", {
                 required: "Name is required",
                 minLength: { value: 3, message: "Name must be at least 3 characters" },
               })}
               type="text"
               placeholder="Enter admin name"
+              autoComplete="name"
               className={fieldClass}
             />
             {errors.name ? <p className="mt-1 text-sm text-red-600">{errors.name.message}</p> : null}
           </div>
 
           <div>
-            <label className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
+            <label htmlFor="admin-email" className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
               <Mail size={16} className="text-gray-500" />
               Email
             </label>
             <input
+              id="admin-email"
               {...register("email")}
               type="email"
+              autoComplete="email"
               disabled
               className={`${fieldClass} cursor-not-allowed bg-gray-100 text-gray-500`}
             />
           </div>
 
           <div>
-            <label className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700">
+            <label
+              htmlFor="admin-password"
+              className="mb-1 flex items-center gap-2 text-sm font-semibold text-gray-700"
+            >
               <Lock size={16} className="text-gray-500" />
               New Password
             </label>
             <input
+              id="admin-password"
               {...register("password", {
                 minLength: { value: 6, message: "Password must be at least 6 characters" },
               })}
               type="password"
               placeholder="Leave empty to keep current password"
+              autoComplete="current-password"
               className={fieldClass}
             />
             {errors.password ? (

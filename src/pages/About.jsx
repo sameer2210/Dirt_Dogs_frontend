@@ -115,7 +115,13 @@ const About = () => {
             alt={content.ownerInfo.name}
             className="h-auto w-full rounded-xl object-cover"
             onError={(e) => {
-              e.currentTarget.src = fallbackOwnerImage;
+              // Prevent infinite retry loops if fallback also fails
+              if (e.currentTarget.dataset.fallbackApplied === "true") {
+                e.currentTarget.onerror = null;
+                return;
+              }
+              e.currentTarget.dataset.fallbackApplied = "true";
+              e.currentTarget.src = "/placeholder.jpg";
             }}
           />
 
